@@ -1,11 +1,12 @@
-import './App.css';
+import './globals.css';
+import F1RaceReport from './page';
 import Qualifying from './components/Qualifying';
 import Race from './components/Race';
 
 function App() {
   return (
     <div className="Results">
-      <Race />
+      <F1RaceReport />
     </div>
   );
 }
