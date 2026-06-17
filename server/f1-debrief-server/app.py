@@ -9,31 +9,31 @@ from f1 import year, country, last_race, official_event_name, event_name, locati
 app = Flask(__name__)
 CORS(app)
 
-@app.route('/home')
+@app.route('/api/home')
 def home():
     return "Welcome to F1 Debrief!"
 
-@app.route('/qualifying')
+@app.route('/api/qualifying')
 def qualifying_results():
     results = get_qualifying_results()
     return jsonify(results)
 
-@app.route('/race')
+@app.route('/api/race')
 def race_results():
     results = get_race_results()
     return jsonify(results)
 
-@app.route('/standings')
+@app.route('/api/standings')
 def standings():
     results = get_standings()
     return jsonify(results)
 
-@app.route('/highlights')
+@app.route('/api/highlights')
 def highlights():
     results = get_highlights()
     return jsonify(results)
 
-@app.route('/race-dates')
+@app.route('/api/race-dates')
 def race_dates():
     return jsonify({
         'eventDate': str(last_race['EventDate']),
