@@ -53,10 +53,10 @@ const penaltySummary = [
 
 function SeverityBadge({ severity }) {
   const colors = {
-    Warning: "bg-yellow-100 text-yellow-800 border-yellow-200",
-    "5s Penalty": "bg-orange-100 text-orange-800 border-orange-200",
-    "10s Penalty": "bg-red-100 text-red-800 border-red-200",
-    Caution: "bg-blue-100 text-blue-800 border-blue-200",
+    Warning: "bg-yellow-950 text-yellow-300 border-yellow-900",
+    "5s Penalty": "bg-orange-950 text-orange-300 border-orange-900",
+    "10s Penalty": "bg-red-950 text-red-300 border-red-900",
+    Caution: "bg-blue-950 text-blue-300 border-blue-900",
     Technical: "bg-purple-100 text-purple-800 border-purple-200",
   }
 
@@ -82,15 +82,15 @@ export function RaceIncidents() {
                 <div className="text-sm text-muted-foreground">Total Incidents</div>
               </div>
               <div className="p-4 bg-muted/50 rounded-lg">
-                <div className="text-2xl font-bold text-orange-600">3</div>
+                <div className="text-2xl font-bold text-orange-400">3</div>
                 <div className="text-sm text-muted-foreground">Penalties Issued</div>
               </div>
               <div className="p-4 bg-muted/50 rounded-lg">
-                <div className="text-2xl font-bold text-blue-600">1</div>
+                <div className="text-2xl font-bold text-blue-400">1</div>
                 <div className="text-sm text-muted-foreground">Yellow Flags</div>
               </div>
               <div className="p-4 bg-muted/50 rounded-lg">
-                <div className="text-2xl font-bold text-green-600">0</div>
+                <div className="text-2xl font-bold text-green-400">0</div>
                 <div className="text-sm text-muted-foreground">Red Flags</div>
               </div>
             </div>

@@ -1,60 +1,49 @@
-@import "tailwindcss/preflight";
-/* Removed @tailwind utilities; because it's not supported in standard CSS files */
+@import "tailwindcss";
 
-/* Removed unsupported @custom-variant dark (&:is(.dark *)); */
+@custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Enhanced F1 color palette with authentic racing colors */
-  --background: oklch(0.02 0 0); /* Deep black like carbon fiber */
-  --foreground: oklch(0.98 0 0); /* Bright white text */
-  --card: oklch(0.08 0.01 0); /* Dark carbon card background */
-  --card-foreground: oklch(0.95 0 0);
-  --popover: oklch(0.05 0 0);
-  --popover-foreground: oklch(0.95 0 0);
-  --primary: oklch(0.65 0.25 15); /* F1 Racing Red */
+  /* F1 brand colors */
+  --background: #15151e; /* lighter page background */
+  --foreground: oklch(0.96 0.004 285);
+  --card: #000000; /* near-black cards */
+  --card-foreground: oklch(0.96 0.004 285);
+  --popover: oklch(0.04 0.005 280);
+  --popover-foreground: oklch(0.96 0.004 285);
+  --primary: oklch(0.63 0.25 30); /* #FF1E00 */
   --primary-foreground: oklch(1 0 0);
   --secondary: oklch(0.75 0.15 45); /* Championship Gold */
   --secondary-foreground: oklch(0.1 0 0);
-  --muted: oklch(0.12 0.01 0);
-  --muted-foreground: oklch(0.65 0 0);
+  --muted: oklch(0.3 0.013 285);
+  --muted-foreground: oklch(0.64 0.01 285);
   --accent: oklch(0.85 0.1 120); /* Neon Green for highlights */
   --accent-foreground: oklch(0.1 0 0);
-  --destructive: oklch(0.6 0.2 25);
+  --destructive: oklch(0.6 0.22 28);
   --destructive-foreground: oklch(1 0 0);
-  --border: oklch(0.2 0.01 0);
-  --input: oklch(0.15 0.01 0);
-  --ring: oklch(0.65 0.25 15);
+  --border: oklch(0.18 0.012 285);
+  --input: oklch(0.16 0.012 285);
+  --ring: oklch(0.63 0.25 30);
 
-  /* F1 tire compound colors - authentic to real F1 */
+  /* F1 tire compound colors*/
   --chart-1: oklch(0.7 0.25 15); /* Soft - Red */
   --chart-2: oklch(0.8 0.2 60); /* Medium - Yellow */
   --chart-3: oklch(0.9 0.05 0); /* Hard - White */
-  --chart-4: oklch(0.6 0.15 120); /* Intermediate - Green */
+  --chart-4: oklch(0.6 0.15 120); /* Inters - Green */
   --chart-5: oklch(0.5 0.2 240); /* Wet - Blue */
 
   --radius: 0.25rem; /* Sharper, more technical corners */
-  --sidebar: oklch(0.05 0 0);
-  --sidebar-foreground: oklch(0.95 0 0);
-  --sidebar-primary: oklch(0.65 0.25 15);
+  --sidebar: oklch(0.17 0.018 285);
+  --sidebar-foreground: oklch(0.96 0.004 285);
+  --sidebar-primary: oklch(0.63 0.25 30);
   --sidebar-primary-foreground: oklch(1 0 0);
   --sidebar-accent: oklch(0.75 0.15 45);
   --sidebar-accent-foreground: oklch(0.1 0 0);
-  --sidebar-border: oklch(0.15 0 0);
-  --sidebar-ring: oklch(0.65 0.25 15);
-}
+  --sidebar-border: oklch(0.33 0.012 285);
+  --sidebar-ring: oklch(0.63 0.25 30);
 
-.dark {
-  /* Dark mode with even deeper blacks and brighter accents */
-  --background: oklch(0.01 0 0);
-  --foreground: oklch(1 0 0);
-  --card: oklch(0.05 0 0);
-  --card-foreground: oklch(1 0 0);
-  --primary: oklch(0.75 0.25 15);
-  --secondary: oklch(0.85 0.15 45);
-  --accent: oklch(0.9 0.12 120);
-  --muted: oklch(0.08 0 0);
-  --border: oklch(0.15 0 0);
-  --input: oklch(0.1 0 0);
+  /* Top banner: F1 black, stays dark regardless of theme */
+  --header: #15151e;
+  --header-foreground: oklch(0.96 0.004 285);
 }
 
 /* Added F1-specific custom styles and animations */
@@ -114,9 +103,13 @@
   background: linear-gradient(to bottom, var(--primary), var(--secondary));
 }
 
-:root {
-  --font-sans: var(--font-geist-sans);
+@theme inline {
+  --font-sans: "Titillium Web", ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono);
+  --color-f1-red: #ff1e00;
+  --color-f1-black: #15151e;
+  --color-header: var(--header);
+  --color-header-foreground: var(--header-foreground);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -163,5 +156,6 @@
   body {
     background-color: var(--background);
     color: var(--foreground);
+    font-family: var(--font-sans);
   }
 }

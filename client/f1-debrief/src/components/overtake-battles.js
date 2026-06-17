@@ -75,7 +75,7 @@ const battleSummary = [
 ]
 
 function DifficultyRating({ difficulty }) {
-  const color = difficulty >= 8 ? "text-red-600" : difficulty >= 6 ? "text-orange-600" : "text-green-600"
+  const color = difficulty >= 8 ? "text-red-500" : difficulty >= 6 ? "text-orange-400" : "text-green-400"
   return (
     <div className="flex items-center gap-2">
       <span className={`font-semibold ${color}`}>{difficulty}/10</span>
@@ -86,9 +86,9 @@ function DifficultyRating({ difficulty }) {
 
 function TypeBadge({ type }) {
   const colors = {
-    "DRS Assisted": "bg-blue-100 text-blue-800 border-blue-200",
-    "Late Braking": "bg-red-100 text-red-800 border-red-200",
-    Strategic: "bg-green-100 text-green-800 border-green-200",
+    "DRS Assisted": "bg-blue-950 text-blue-300 border-blue-900",
+    "Late Braking": "bg-red-950 text-red-300 border-red-900",
+    Strategic: "bg-green-950 text-green-300 border-green-900",
     Slipstream: "bg-purple-100 text-purple-800 border-purple-200",
   }
 

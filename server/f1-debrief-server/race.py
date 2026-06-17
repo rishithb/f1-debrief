@@ -1,26 +1,36 @@
-import fastf1
-from f1 import year, country
-
-_race_cache = None
+import pandas as pd
+from fastf1.ergast import Ergast
+from f1 import year, round_number, event_name
+from db import db_get, db_put
 
 def get_race_results():
-    global _race_cache
-    if _race_cache is not None:
-        return _race_cache
+    cached = db_get(year, round_number, 'race')
+    if cached is not None:
+        return cached
 
-    session = fastf1.get_session(year, country, 'R')
-    session.load()
+    ergast = Ergast()
+    response = ergast.get_race_results(season=int(year), round=int(round_number))
 
-    results_df = session.results.iloc[0:20].loc[:, [
-        'DriverNumber', 'BroadcastName', 'Position', 'GridPosition', 'Time', 'Status', 'Points'
-    ]]
+    if not response.content:
+        return []
 
-    # Convert Timedelta in 'Time' column to string
-    if 'Time' in results_df.columns:
-        results_df['Time'] = results_df['Time'].astype(str)
+    df = response.content[0]
+    df = df.where(pd.notna(df), None)
 
-    results = results_df.to_dict(orient='records')
+    results = []
+    for _, row in df.iterrows():
+        results.append({
+            'Position': int(row['position']) if row['position'] is not None else None,
+            'DriverNumber': str(row['number']),
+            'DriverCode': row['driverCode'],
+            'FullName': f"{row['givenName']} {row['familyName']}",
+            'TeamName': row['constructorName'],
+            'GridPosition': int(row['grid']) if row['grid'] is not None else None,
+            'Status': row['status'],
+            'Points': float(row['points']) if row['points'] is not None else 0,
+            'FastestLapRank': int(row['fastestLapRank']) if row['fastestLapRank'] is not None else None,
+            'FastestLapTime': str(row['fastestLapTime']) if row['fastestLapTime'] is not None else None,
+        })
 
-    _race_cache = results
-    return _race_cache
-
+    db_put(year, round_number, 'race', results, event_name)
+    return results

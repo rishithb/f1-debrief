@@ -1,39 +1,64 @@
-import fastf1
-from f1 import year, country
+import pandas as pd
+from fastf1.ergast import Ergast
+from f1 import year, round_number, event_name
+from db import db_get, db_put
 
-_qualifying_cache = None
-
-def reformat_time(t): # removes "Q=" and the days from the lap time
-    t = t[10:-3]  # Remove "Q1=" and the last 3 characters (which are usually " days")
-    return t
-
-def filter_time(results, session):
-    return [t for t in results if t[session] and t[session] != 'NaT']
-        
+def _format_laptime(td):
+    if td is None or (isinstance(td, float) and pd.isna(td)):
+        return ""
+    try:
+        total = td.total_seconds()
+        minutes = int(total // 60)
+        seconds = total % 60
+        return f"{minutes}:{seconds:06.3f}"
+    except Exception:
+        return ""
 
 def get_qualifying_results():
-    # caching qualifying results to avoid repeated API calls
-    global _qualifying_cache
-    if _qualifying_cache is not None:
-        return _qualifying_cache
+    cached = db_get(year, round_number, 'qualifying')
+    if cached is not None:
+        return cached
 
-    session = fastf1.get_session(year, country, 'Q')
-    session.load()
-        
-    q1_results = session.results.iloc[0:20].loc[:, ['Abbreviation', 'Q1']]
-    q1_results['Q1'] = q1_results['Q1'].astype(str).apply(reformat_time)
-    q2_results = session.results.iloc[0:20].loc[:, ['Abbreviation', 'Q2']]
-    q2_results['Q2'] = q2_results['Q2'].astype(str).apply(reformat_time)
-    q3_results = session.results.iloc[0:20].loc[:, ['Abbreviation', 'Q3']]
-    q3_results['Q3'] = q3_results['Q3'].astype(str).apply(reformat_time)
+    ergast = Ergast()
+    response = ergast.get_qualifying_results(season=int(year), round=int(round_number))
 
-    q1_results = filter_time(q1_results.to_dict(orient='records'), 'Q1')
-    q2_results = filter_time(q2_results.to_dict(orient='records'), 'Q2')
-    q3_results = filter_time(q3_results.to_dict(orient='records'), 'Q3')
+    if not response.content:
+        return []
 
-    _qualifying_cache = {
-        'Q1': q1_results,
-        'Q2': q2_results,
-        'Q3': q3_results
-    }
-    return _qualifying_cache
+    df = response.content[0]
+    drivers_list = []
+    pole_time = None
+
+    for _, row in df.iterrows():
+        q3 = row['Q3'] if not (isinstance(row['Q3'], float) and pd.isna(row['Q3'])) and row['Q3'] is not pd.NaT else None
+        q2 = row['Q2'] if not (isinstance(row['Q2'], float) and pd.isna(row['Q2'])) and row['Q2'] is not pd.NaT else None
+        q1 = row['Q1'] if not (isinstance(row['Q1'], float) and pd.isna(row['Q1'])) and row['Q1'] is not pd.NaT else None
+
+        best_time = q3 or q2 or q1
+
+        if pole_time is None and best_time is not None:
+            pole_time = best_time
+
+        if pole_time is not None and best_time is not None:
+            delta_s = best_time.total_seconds() - pole_time.total_seconds()
+            gap = f"+{delta_s:.3f}" if delta_s > 0 else "0.000"
+        else:
+            gap = ""
+
+        drivers_list.append({
+            'position': int(row['position']),
+            'driver': f"{row['givenName']} {row['familyName']}",
+            'team': row['constructorName'],
+            'code': row['driverCode'],
+            'number': str(row['number']),
+            'nationality': row['driverNationality'],
+            'photo': f"/drivers/{row['number']}.png",
+            'teamLogo': '/placeholder.svg',
+            'Q1': _format_laptime(q1),
+            'Q2': _format_laptime(q2),
+            'Q3': _format_laptime(q3),
+            'gap': gap,
+        })
+
+    db_put(year, round_number, 'qualifying', drivers_list, event_name)
+    return drivers_list

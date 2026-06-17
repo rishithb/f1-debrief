@@ -1,13 +1,14 @@
 import './globals.css';
 import F1RaceReport from './page';
-import Qualifying from './components/Qualifying';
-import Race from './components/Race';
+import { F1DataProvider } from './context/F1DataContext';
 
 function App() {
   return (
-    <div className="Results">
-      <F1RaceReport />
-    </div>
+    <F1DataProvider>
+      <div className="Results">
+        <F1RaceReport />
+      </div>
+    </F1DataProvider>
   );
 }
 

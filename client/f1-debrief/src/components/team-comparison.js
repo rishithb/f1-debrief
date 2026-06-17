@@ -55,7 +55,7 @@ export function TeamComparison() {
   return (
     <div className="space-y-6">
       {teamComparisons.map((team) => (
-        <Card key={team.team} className="bg-gradient-to-br from-white to-slate-50 border-slate-200 shadow-sm">
+        <Card key={team.team} className="bg-card shadow-sm">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -67,9 +67,9 @@ export function TeamComparison() {
                 <div>
                   <CardTitle className="text-xl font-bold">{team.team}</CardTitle>
                   <div className="flex items-center gap-2 mt-1">
-                    <TrendingUp className="h-4 w-4 text-red-600" />
-                    <span className="font-bold text-red-600">{team.totalPoints} PTS</span>
-                    <span className="text-sm text-slate-600">Combined</span>
+                    <TrendingUp className="h-4 w-4 text-red-500" />
+                    <span className="font-bold text-red-500">{team.totalPoints} PTS</span>
+                    <span className="text-sm text-neutral-400">Combined</span>
                   </div>
                 </div>
               </div>
@@ -83,7 +83,7 @@ export function TeamComparison() {
                     <img
                       src={driver.photo || "/placeholder.svg"}
                       alt={driver.name}
-                      className="w-12 h-12 rounded-full object-cover border-2 border-slate-200"
+                      className="w-12 h-12 rounded-full object-cover border-2 border-neutral-800"
                     />
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
@@ -91,8 +91,8 @@ export function TeamComparison() {
                         <span className="text-lg">{driver.country}</span>
                       </div>
                       <div className="flex items-center gap-2 mt-1">
-                        <span className="font-bold text-lg text-blue-600">{driver.points}</span>
-                        <span className="text-sm text-slate-600">points</span>
+                        <span className="font-bold text-lg text-blue-400">{driver.points}</span>
+                        <span className="text-sm text-neutral-400">points</span>
                       </div>
                     </div>
                   </div>
@@ -100,20 +100,20 @@ export function TeamComparison() {
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <Target className="h-4 w-4 text-green-600" />
+                        <Target className="h-4 w-4 text-green-400" />
                         <span className="text-sm font-medium">Qualifying H2H</span>
                       </div>
-                      <Badge variant="secondary" className="font-mono bg-slate-100 text-slate-700">
+                      <Badge variant="secondary" className="font-mono bg-neutral-100 text-neutral-300">
                         {driver.qualifyingH2H.wins} - {driver.qualifyingH2H.total - driver.qualifyingH2H.wins}
                       </Badge>
                     </div>
 
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <Zap className="h-4 w-4 text-red-600" />
+                        <Zap className="h-4 w-4 text-red-500" />
                         <span className="text-sm font-medium">Race H2H</span>
                       </div>
-                      <Badge variant="secondary" className="font-mono bg-slate-100 text-slate-700">
+                      <Badge variant="secondary" className="font-mono bg-neutral-100 text-neutral-300">
                         {driver.raceH2H.wins} - {driver.raceH2H.total - driver.raceH2H.wins}
                       </Badge>
                     </div>

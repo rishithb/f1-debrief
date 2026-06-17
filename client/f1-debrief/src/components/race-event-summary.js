@@ -55,24 +55,24 @@ const raceMetrics = [
 
 function EventFlag({ event }) {
   const colors = {
-    success: "bg-green-50 border-green-200 text-green-900",
-    warning: "bg-yellow-50 border-yellow-200 text-yellow-900",
-    info: "bg-blue-50 border-blue-200 text-blue-900",
-    error: "bg-red-50 border-red-200 text-red-900",
+    success: "bg-green-950 border-green-900 text-green-100",
+    warning: "bg-yellow-950 border-yellow-900 text-yellow-100",
+    info: "bg-blue-950 border-blue-900 text-blue-100",
+    error: "bg-red-950 border-red-900 text-red-100",
   }
 
   const iconColors = {
-    success: "text-green-700",
-    warning: "text-yellow-700",
-    info: "text-blue-700",
-    error: "text-red-700",
+    success: "text-green-400",
+    warning: "text-yellow-400",
+    info: "text-blue-400",
+    error: "text-red-400",
   }
 
   const badgeColors = {
-    success: "bg-green-100 text-green-800 border-green-300",
-    warning: "bg-yellow-100 text-yellow-800 border-yellow-300",
-    info: "bg-blue-100 text-blue-800 border-blue-300",
-    error: "bg-red-100 text-red-800 border-red-300",
+    success: "bg-green-950 text-green-300 border-green-900",
+    warning: "bg-yellow-950 text-yellow-300 border-yellow-900",
+    info: "bg-blue-950 text-blue-300 border-blue-900",
+    error: "bg-red-950 text-red-300 border-red-900",
   }
 
   return (
