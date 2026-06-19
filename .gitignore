@@ -12,6 +12,12 @@ venv/
 # SQLite database
 *.db
 
+# Test output
+server/f1-debrief-server/qualifying_test_output.json
+
+# Production env (set REACT_APP_API_URL at build time instead)
+client/f1-debrief/.env.production
+
 # Node
 node_modules/
 

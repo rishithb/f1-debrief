@@ -1,23 +1,35 @@
 "use client"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./components/ui/card"
-import { Badge } from "./components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/ui/tabs"
 import { QualifyingResults } from "./components/qualifying-results"
 import { RaceResults } from "./components/race-results"
 import { TeamComparison } from "./components/team-comparison"
 import { RaceIncidents } from "./components/race-incidents"
-import { OvertakeBattles } from "./components/overtake-battles"
 import { RaceEventSummary } from "./components/race-event-summary"
 import { ChampionshipStandings } from "./components/championship-standings"
+import { NextRaceCountdown } from "./components/next-race-countdown"
+import { CircuitStats } from "./components/circuit-stats"
 import { useF1Data } from "./context/F1DataContext"
-import { Trophy, Calendar, MapPin, Flag, Zap, Timer, Target } from "lucide-react"
+import { getTeamColor, hexAlpha } from "./utils/teamColors"
+import { Trophy, Calendar, MapPin, Zap, Timer, Target, Gauge } from "lucide-react"
 import './globals.css';
 
 function formatDate(dateStr) {
   if (!dateStr) return '—'
   const d = new Date(dateStr)
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase()
+}
+
+// Handles both already-formatted "1:20.122" and raw pandas "0 days 00:01:20.122000"
+function formatLapTime(raw) {
+  if (!raw) return '—'
+  const match = String(raw).match(/(\d+) days? (\d+):(\d+):(\d+)\.(\d+)/)
+  if (!match) return raw
+  const [, days, hours, minutes, seconds, micros] = match
+  const totalMins = parseInt(days) * 1440 + parseInt(hours) * 60 + parseInt(minutes)
+  const secs = `${seconds}.${micros.slice(0, 3)}`
+  return `${totalMins}:${parseFloat(secs).toFixed(3).padStart(6, '0')}`
 }
 
 export default function F1RaceReport() {
@@ -36,30 +48,44 @@ export default function F1RaceReport() {
       <Tabs defaultValue="overview">
         <div className="sticky top-0 z-50">
           <header className="border-b border-black/20 bg-header backdrop-blur-md shadow-sm">
-            <div className="container mx-auto px-4 py-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-6">
-                  <div className="flex items-center gap-3">
-                    <div>
-                      <h1 className="text-3xl font-bold text-balance text-f1-red">FORMULA 1</h1>
-                      <p className="text-sm text-header-foreground/60 font-mono tracking-wider">WEEKEND DEBRIEF</p>
+            <div className="container mx-auto px-6 py-4">
+              <div className="relative flex items-center">
+
+                {/* Left — F1 branding */}
+                <div className="shrink-0 flex items-center gap-4">
+                  <div>
+                    <h1 className="text-3xl font-bold text-f1-red leading-none">FORMULA 1</h1>
+                    <p className="text-sm text-white/70 font-mono tracking-widest mt-0.5">WEEKEND DEBRIEF</p>
+                  </div>
+                  <div className="w-px h-12 bg-white/15" />
+                </div>
+
+                {/* Center — absolutely centered on the full header width */}
+                <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center text-center pointer-events-none">
+                  <div className="flex items-center gap-3 mb-1">
+                    <span className="text-sm font-mono tracking-widest text-white/70 uppercase">Round {roundNumber}</span>
+                    <span className="text-white/50">·</span>
+                    <div className="flex items-center gap-1.5">
+                      <Calendar className="h-3.5 w-3.5 text-white/70" />
+                      <span className="text-sm font-mono text-white/70">{raceDate}</span>
+                    </div>
+                    <span className="text-white/50">·</span>
+                    <div className="flex items-center gap-1.5">
+                      <MapPin className="h-3.5 w-3.5 text-white/70" />
+                      <span className="text-sm text-white/70">{location}</span>
                     </div>
                   </div>
+                  <p className="text-2xl font-bold text-white uppercase tracking-wide whitespace-nowrap">
+                    {eventName !== '—' ? eventName : 'Grand Prix'}
+                  </p>
                 </div>
-                <div className="flex items-center gap-6 text-sm">
-                  <div className="flex items-center gap-2 px-3 py-2 bg-white/5 rounded-lg border border-white/10 shadow-sm">
-                    <Calendar className="h-4 w-4 text-blue-400" />
-                    <span className="font-mono text-header-foreground/80">{raceDate}</span>
-                  </div>
-                  <div className="flex items-center gap-2 px-3 py-2 bg-white/5 rounded-lg border border-white/10 shadow-sm">
-                    <MapPin className="h-4 w-4 text-green-400" />
-                    <span className="text-header-foreground/80">{location}</span>
-                  </div>
-                  <Badge className="flex items-center gap-2 px-4 py-2 bg-f1-red text-white font-bold">
-                    <Flag className="h-4 w-4" />
-                    ROUND {roundNumber}
-                  </Badge>
+
+                {/* Right — next race countdown, pushed to far right */}
+                <div className="ml-auto shrink-0 flex items-center gap-4">
+                  <div className="w-px h-12 bg-white/15" />
+                  <NextRaceCountdown />
                 </div>
+
               </div>
             </div>
           </header>
@@ -101,94 +127,67 @@ export default function F1RaceReport() {
         <main className="container mx-auto px-4 py-8 space-y-8">
           <TabsContent value="overview" className="space-y-8">
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              <Card className="bg-card shadow-sm">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center gap-2">
-                    <Trophy className="h-5 w-5 text-yellow-400" />
-                    <CardTitle className="text-lg font-bold text-neutral-100">RACE WINNER</CardTitle>
-                  </div>
-                  <CardDescription className="font-mono text-xs tracking-wider text-neutral-400">
-                    {eventName.toUpperCase()}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {race.loading ? <p className="text-neutral-400 text-sm">Loading...</p> : (
-                    <div className="flex items-center gap-4">
-                      <div className="w-16 h-16 rounded-lg bg-primary/10 flex items-center justify-center text-lg font-bold text-neutral-100 border-2 border-red-900">
-                        {winner?.DriverCode ?? '—'}
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-bold text-lg text-neutral-100">{winner?.FullName ?? '—'}</p>
-                        <p className="text-sm text-blue-400 font-semibold">{winner?.TeamName ?? '—'}</p>
-                        <div className="flex items-center gap-2 mt-1">
-                          <Timer className="h-3 w-3 text-green-400" />
-                          <p className="text-xs font-mono text-neutral-400">{winner?.Status ?? '—'}</p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+              {(() => {
+                const winnerColor  = getTeamColor(winner?.TeamName)
+                const poleColor    = getTeamColor(pole?.team)
+                const fastestColor = getTeamColor(fastestLap?.TeamName)
 
-              <Card className="bg-card shadow-sm">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center gap-2">
-                    <Target className="h-5 w-5 text-blue-400" />
-                    <CardTitle className="text-lg font-bold text-neutral-100">POLE POSITION</CardTitle>
-                  </div>
-                  <CardDescription className="font-mono text-xs tracking-wider text-neutral-400">
-                    QUALIFYING FASTEST LAP
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {qualifying.loading ? <p className="text-neutral-400 text-sm">Loading...</p> : (
-                    <div className="flex items-center gap-4">
-                      <div className="w-16 h-16 rounded-lg bg-primary/10 flex items-center justify-center text-lg font-bold text-neutral-100 border-2 border-blue-900">
-                        {pole?.code ?? '—'}
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-bold text-lg text-neutral-100">{pole?.driver ?? '—'}</p>
-                        <p className="text-sm text-red-500 font-semibold">{pole?.team ?? '—'}</p>
-                        <div className="flex items-center gap-2 mt-1">
-                          <Zap className="h-3 w-3 text-yellow-400" />
-                          <p className="text-xs font-mono text-yellow-400 font-bold">{pole?.Q3 ?? '—'}</p>
+                function StatCard({ label, subtitle, icon: Icon, iconClass, loading, code, name, team, teamColor, detail, detailIcon: DetailIcon, detailClass }) {
+                  return (
+                    <Card className="shadow-sm overflow-hidden" style={{
+                      background: `linear-gradient(150deg, transparent 0%, ${hexAlpha(teamColor, 0.18)} 75%)`,
+                      borderColor: hexAlpha(teamColor, 0.35),
+                    }}>
+                      <CardHeader className="pb-3">
+                        <div className="flex items-center gap-2">
+                          <Icon className={`h-5 w-5 ${iconClass}`} />
+                          <CardTitle className="text-lg font-bold text-neutral-100">{label}</CardTitle>
                         </div>
-                      </div>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+                        <CardDescription className="font-mono text-xs tracking-wider text-neutral-400">{subtitle}</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        {loading ? <p className="text-neutral-400 text-sm">Loading...</p> : (
+                          <div className="flex items-center gap-4">
+                            <div className="w-16 h-16 rounded-lg flex items-center justify-center text-lg font-bold border-2"
+                              style={{ backgroundColor: hexAlpha(teamColor, 0.15), borderColor: teamColor, color: teamColor }}>
+                              {code ?? '—'}
+                            </div>
+                            <div className="flex-1">
+                              <p className="font-bold text-lg text-neutral-100">{name ?? '—'}</p>
+                              <p className="text-sm font-semibold" style={{ color: teamColor }}>{team ?? '—'}</p>
+                              <div className="flex items-center gap-2 mt-1">
+                                <DetailIcon className={`h-3 w-3 ${detailClass}`} />
+                                <p className={`text-xs font-mono font-bold ${detailClass}`}>{detail ?? '—'}</p>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  )
+                }
 
-              <Card className="bg-card shadow-sm">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center gap-2">
-                    <Zap className="h-5 w-5 text-green-400" />
-                    <CardTitle className="text-lg font-bold text-neutral-100">FASTEST LAP</CardTitle>
-                  </div>
-                  <CardDescription className="font-mono text-xs tracking-wider text-neutral-400">
-                    RACE FASTEST LAP
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {race.loading ? <p className="text-neutral-400 text-sm">Loading...</p> : (
-                    <div className="flex items-center gap-4">
-                      <div className="w-16 h-16 rounded-lg bg-primary/10 flex items-center justify-center text-lg font-bold text-neutral-100 border-2 border-green-900">
-                        {fastestLap?.DriverCode ?? '—'}
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-bold text-lg text-neutral-100">{fastestLap?.FullName ?? '—'}</p>
-                        <p className="text-sm text-blue-400 font-semibold">{fastestLap?.TeamName ?? '—'}</p>
-                        <div className="flex items-center gap-2 mt-1">
-                          <Timer className="h-3 w-3 text-red-500" />
-                          <p className="text-xs font-mono text-green-400 font-bold">{fastestLap?.FastestLapTime ?? '—'}</p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+                return <>
+                  <StatCard
+                    label="RACE WINNER" subtitle={eventName.toUpperCase()} icon={Trophy} iconClass="text-yellow-400"
+                    loading={race.loading} code={winner?.DriverCode} name={winner?.FullName} team={winner?.TeamName} teamColor={winnerColor}
+                    detail="Finished" detailIcon={Timer} detailClass="text-neutral-400"
+                  />
+                  <StatCard
+                    label="POLE POSITION" subtitle="FASTEST QUALIFYING LAP" icon={Zap} iconClass="text-purple-400"
+                    loading={qualifying.loading} code={pole?.code} name={pole?.driver} team={pole?.team} teamColor={poleColor}
+                    detail={pole?.Q3} detailIcon={Timer} detailClass="text-neutral-400"
+                  />
+                  <StatCard
+                    label="FASTEST LAP" subtitle="FASTEST RACE LAP" icon={Gauge} iconClass="text-green-400"
+                    loading={race.loading} code={fastestLap?.DriverCode} name={fastestLap?.FullName} team={fastestLap?.TeamName} teamColor={fastestColor}
+                    detail={formatLapTime(fastestLap?.FastestLapTime)} detailIcon={Timer} detailClass="text-neutral-400"
+                  />
+                </>
+              })()}
             </div>
 
+            <CircuitStats />
             <RaceEventSummary />
           </TabsContent>
 
@@ -208,7 +207,6 @@ export default function F1RaceReport() {
             <div className="space-y-6">
               <RaceResults />
               <RaceIncidents />
-              <OvertakeBattles />
             </div>
           </TabsContent>
         </main>

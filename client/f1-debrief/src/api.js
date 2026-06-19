@@ -14,3 +14,15 @@ export const fetchRaceDates = () =>
 
 export const fetchHighlights = () =>
   fetch(`${BASE_URL}/api/highlights`).then(r => r.json())
+
+export const fetchPitStops = () =>
+  fetch(`${BASE_URL}/api/pit-stops`).then(r => r.json())
+
+export const fetchNextRace = () =>
+  fetch(`${BASE_URL}/api/next-race`).then(r => r.json())
+
+export const fetchTeamStats = () =>
+  fetch(`${BASE_URL}/api/team-stats`).then(r => r.json())
+
+export const fetchStints = () =>
+  fetch(`${BASE_URL}/api/stints`).then(r => r.json())

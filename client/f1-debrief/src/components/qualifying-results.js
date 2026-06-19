@@ -3,6 +3,7 @@ import { Badge } from "./ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table"
 import { Clock, Trophy, Target } from "lucide-react"
 import { useF1Data } from "../context/F1DataContext"
+import { getTeamColor, hexAlpha } from "../utils/teamColors"
 
 export function QualifyingResults() {
   const { data: qualifyingData, loading, error } = useF1Data().qualifying
@@ -14,8 +15,7 @@ export function QualifyingResults() {
     <div className="space-y-6">
       <Card className="bg-card shadow-sm">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-neutral-100">
-            <Clock className="h-5 w-5 text-red-500" />
+          <CardTitle className="flex items-center gap-2 text-neutral-100 text-xl">
             QUALIFYING RESULTS
           </CardTitle>
           <CardDescription className="text-neutral-400">
@@ -24,61 +24,47 @@ export function QualifyingResults() {
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
-            <Table>
+            <Table className="border-separate border-spacing-y-1">
               <TableHeader>
-                <TableRow>
-                  <TableHead className="w-12 text-neutral-300">POS</TableHead>
-                  <TableHead className="text-neutral-300">DRIVER</TableHead>
-                  <TableHead className="text-neutral-300">TEAM</TableHead>
-                  <TableHead className="text-neutral-300">Q1</TableHead>
-                  <TableHead className="text-neutral-300">Q2</TableHead>
-                  <TableHead className="text-neutral-300">Q3</TableHead>
-                  <TableHead className="text-neutral-300">GAP</TableHead>
+                <TableRow className="text-base">
+                  <TableHead className="w-12">Pos</TableHead>
+                  <TableHead>Driver</TableHead>
+                  <TableHead>Team</TableHead>
+                  <TableHead>Q1</TableHead>
+                  <TableHead>Q2</TableHead>
+                  <TableHead>Q3</TableHead>
+                  <TableHead>Gap</TableHead>
                 </TableRow>
               </TableHeader>
-              <TableBody>
-                {qualifyingData.map((driver) => (
-                  <TableRow key={driver.position} className="hover:bg-muted">
-                    <TableCell className="font-bold text-lg text-neutral-100">
-                      {driver.position === 1 && <Trophy className="h-4 w-4 text-yellow-400 inline mr-1" />}
-                      {driver.position}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <div className="relative">
-                          <img
-                            src={driver.photo || "/placeholder.svg"}
-                            alt={driver.driver}
-                            className="w-10 h-10 rounded-full object-cover border-2 border-red-900"
-                          />
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span className="font-bold text-neutral-100">{driver.driver}</span>
-                            <span className="text-lg">{driver.country}</span>
-                          </div>
-                          <span className="text-xs text-neutral-400 font-mono">{driver.code}</span>
-                        </div>
+              <TableBody className="font-semibold">
+                {qualifyingData.map((driver) => {
+                  const teamColor = getTeamColor(driver.team)
+                  return (
+                  <TableRow key={driver.position} className="text-base">
+                    <TableCell className="font-medium text-base border-l-4" style={{ borderLeftColor: teamColor }}>
+                      <div className="flex items-center gap-2">
+                        {driver.position === 1 && <Trophy className="h-4 w-4 text-yellow-400" />}
+                        {driver.position}
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        <img
-                          src={driver.teamLogo || "/placeholder.svg"}
-                          alt={`${driver.team} logo`}
-                          className="w-6 h-6 object-contain"
-                        />
-                        <span className="text-neutral-400">{driver.team}</span>
+                        <div
+                          className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border"
+                          style={{ backgroundColor: hexAlpha(teamColor, 0.15), borderColor: teamColor, color: teamColor }}
+                        >
+                          {driver.code}
+                        </div>
+                        <span className="font-semibold">{driver.driver}</span>
                       </div>
                     </TableCell>
-                    <TableCell className="font-mono text-sm text-neutral-300">{driver.Q1 || '-'}</TableCell>
-                    <TableCell className="font-mono text-sm text-neutral-300">{driver.Q2 || '-'}</TableCell>
-                    <TableCell className="font-mono text-sm font-bold text-red-500">{driver.Q3 || '-'}</TableCell>
-                    <TableCell className="font-mono text-sm">
-                      <span className="text-neutral-400">{driver.gap || '-'}</span>
-                    </TableCell>
+                    <TableCell className="text-muted-foreground">{driver.team}</TableCell>
+                    <TableCell><span className="font-mono text-base">{driver.Q1 || '—'}</span></TableCell>
+                    <TableCell><span className="font-mono text-base">{driver.Q2 || '—'}</span></TableCell>
+                    <TableCell><span className="font-mono text-base font-bold">{driver.Q3 || '—'}</span></TableCell>
+                    <TableCell><span className="font-mono text-base text-muted-foreground">{driver.gap || '—'}</span></TableCell>
                   </TableRow>
-                ))}
+                )})}
               </TableBody>
             </Table>
           </div>
@@ -90,7 +76,7 @@ export function QualifyingResults() {
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2 text-neutral-100">
               <Target className="h-4 w-4 text-red-500" />
-              Q1 ELIMINATION (P16–P20)
+              Q1 ELIMINATION
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -109,7 +95,7 @@ export function QualifyingResults() {
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2 text-neutral-100">
               <Target className="h-4 w-4 text-orange-400" />
-              Q2 ELIMINATION (P11–P15)
+              Q2 ELIMINATION
             </CardTitle>
           </CardHeader>
           <CardContent>
