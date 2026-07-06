@@ -1,4 +1,4 @@
-# F1 Debrief
+# F1 Debrief - LIVE DEMO: https://d29a4h26w7qs5m.cloudfront.net/
 
 A race weekend dashboard that pulls live F1 data and generates AI-powered analysis for the most recent Grand Prix.
 
